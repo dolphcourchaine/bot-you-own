@@ -1,0 +1,76 @@
+{
+  // The Bot You Own — Cloudflare Worker config.
+  // You do NOT need to understand this file. The deploy button reads it.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bot-you-own",
+  "main": "Engine/worker/index.js",
+  "compatibility_date": "2026-08-01",
+
+  // Workers AI — this is what actually answers. No API key. It's included.
+  "ai": { "binding": "AI" },
+
+  // The chat page and the embed script live in /public.
+  // run_worker_first: static assets are normally served BEFORE the Worker runs.
+  // These paths must go through the Worker so the admin gate applies to /engine/*.
+  "assets": { "directory": "./Engine/public", "binding": "ASSETS", "run_worker_first": ["/engine/*", "/api/*", "/food", "/food/*", "/apps/*", "/chat", "/chat/*"] },
+
+  // The library — PDFs, docs, transcripts, images — lives in Cloudflare AI Search.
+  // "default" is a namespace every account already has; the Worker creates its
+  // own instance inside it on first upload (YourBots/config.js → library.name).
+  // Nothing to click. Uploads go through the admin code. docs/CUSTOMIZE.md → "Give it documents".
+  "ai_search_namespaces": [
+    { "binding": "AI_SEARCH", "namespace": "default", "remote": true }
+  ],
+
+  // Lets the code read YourBots/**/*.md (and .txt/.csv) as plain text.
+  "rules": [{ "type": "Text", "globs": ["**/*.md", "**/*.txt", "**/*.csv"], "fallthrough": true }],
+
+  // Rate limit per visitor: 30 messages a minute. Generous for a human, useless
+  // for a script. ON by default — it's the first line of the firewall (LLM10).
+  // period must be 10 or 60.
+  // The second one is for the passphrase screens only: 10 tries a minute per visitor,
+  // so nobody can sit there guessing. Remove it and the 30/min above still applies.
+  "ratelimits": [
+    { "name": "RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 30, "period": 60 } },
+    { "name": "UNLOCK_LIMITER", "namespace_id": "1002", "simple": { "limit": 10, "period": 60 } }
+  ],
+
+  // The audit log, the settings, the people, Plate (D1). The Worker creates its own
+  // tables on first use, so there is no schema step. There is deliberately NO
+  // database_id here: on deploy, wrangler looks for a database named bot-you-own-logs
+  // in YOUR account and connects to it, or creates it if there is none — so the same
+  // file deploys on any account, from the button, from a connected repo, or from a
+  // terminal. (An id pinned here was one owner's database, and every other account's
+  // build failed with "D1 binding 'DB' references database … which was not found".)
+  // Remove the block to log nowhere but Workers Logs. Read it under the hood → Audit,
+  // or with the queries in docs/CUSTOMIZE.md.
+  "d1_databases": [
+    { "binding": "DB", "database_name": "bot-you-own-logs","database_id": "acce2d09-02e3-40c6-86c8-f69d2566ce0c" }
+  ],
+
+  // Plate can keep each meal's photos (so a scale can be zoomed into later) in R2:
+  // meals/<user>/<meal>/<n>.jpg; deleting a meal deletes them. OFF by default because R2
+  // asks for a payment method on the account. Without it Plate keeps only the thumbnail.
+  // To turn it on: npx wrangler r2 bucket create bot-you-own-photos, then uncomment the
+  // block below and deploy — or leave it commented and run `npm run deploy:photos`.
+  // "r2_buckets": [
+  //   { "binding": "PHOTOS", "bucket_name": "bot-you-own-photos" }
+  // ],
+
+  // Handoff emails (project.json → handoffActions.email) go through Cloudflare Email
+  // Sending. OFF by default because it only works with a domain you've onboarded:
+  //   1. npx wrangler email sending enable yourdomain.com   (or dashboard → Email → Sending)
+  //   2. YourBots/config.js → handoffEmailFrom: "bot@yourdomain.com"
+  //   3. uncomment the block below and deploy. Until then emails are skipped with a
+  //      warning in the logs; webhooks don't need any of this. docs/CUSTOMIZE.md.
+  // "send_email": [
+  //   { "name": "SEND_EMAIL" }
+  // ],
+
+  // Copies the engine source into public/engine/ for the admin "Under the hood"
+  // view. Runs before dev and deploy. The Worker gates /engine/* behind the admin code.
+  // discover: scans YourBots/ and YourBots/_prompt/jobs/ so nobody edits a registry by hand.
+  "build": { "command": "node Engine/scripts/discover.mjs && node Engine/scripts/snapshot-src.mjs" },
+
+  "observability": { "enabled": true }
+}

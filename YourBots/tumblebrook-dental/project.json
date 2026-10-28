@@ -1,0 +1,46 @@
+{
+  "order": 3,
+  "demo": true,
+  "name": "Tumblebrook Family Dental",
+  "tagline": "Family dentistry in Boulder, CO (a made-up practice)",
+  "greeting": "Hi, I'm the Tumblebrook Family Dental assistant. I can answer questions about the practice and take the details for a new-patient appointment.",
+  "starters": [
+    "Do you take Delta Dental?",
+    "What are your hours?",
+    "I have a toothache, what should I do?",
+    "I'd like to book a new-patient appointment"
+  ],
+  "mode": "intake",
+  "grounding": "strict",
+  "handoffText": "I don't have that written down, and I'd rather not guess about anything to do with your care.",
+  "handoffContact": "Call the front desk on (303) 555-0142 during opening hours, or email hello@tumblebrookdental.example.",
+  "handoffActions": {
+    "webhook": "",
+    "email": "",
+    "on": [
+      "handoff",
+      "intake-complete"
+    ]
+  },
+  "allowedLinks": [
+    "https://tumblebrookdental.example",
+    "https://tumblebrookdental.example/new-patients"
+  ],
+  "intakeQuestions": [
+    "What's your name?",
+    "Have you been to Tumblebrook before, or is this your first visit?",
+    "What's the appointment for — a check-up and clean, a specific problem, or something else?",
+    "Which days and times generally work for you?",
+    "What's the best phone number or email to confirm on?"
+  ],
+  "bookingUrl": "",
+  "bookingFitRules": "",
+  "nextSteps": [],
+  "thinkingWords": [
+    "Checking with the front desk",
+    "Looking at the practice notes",
+    "One moment",
+    "Pulling up our hours",
+    "Reading the insurance list"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "kind": "food",
+  "order": 90,
+  "name": "Plate",
+  "tagline": "Snap the plate. The day adds itself up.",
+  "greeting": "Take a photo of what you're eating. I'll name the foods and guess the numbers; fix the portion with a tap.",
+  "access": "email",
+  "listed": true,
+  "food": {
+    "model": "@cf/google/gemma-4-26b-a4b-it",
+    "dailyPhotoLimit": 60,
+    "maxPhotoBytes": 2097152,
+    "coachName": "",
+    "honesty": "Photo estimates are typically within about 30%. Fix the portion when it's off.",
+    "signIn": [
+      { "provider": "google", "clientId": "" },
+      { "provider": "microsoft", "clientId": "" },
+      { "provider": "apple", "clientId": "" }
+    ],
+    "passkeys": true,
+    "totp": true
+  }
+}

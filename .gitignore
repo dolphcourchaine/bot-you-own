@@ -1,0 +1,13 @@
+node_modules/
+.wrangler/
+.dev.vars
+.env
+*.log
+.DS_Store
+Engine/tests/results/
+Engine/public/engine/
+Engine/public/version.json
+YourBots/index.js
+Engine/worker/jobs.generated.js
+package-lock.json
+.wrangler.photos.jsonc

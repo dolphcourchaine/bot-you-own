@@ -1,0 +1,32 @@
+{
+  "order": 2,
+  "demo": true,
+  "name": "Example Co",
+  "tagline": "Machine servicing for Midwest manufacturers",
+  "greeting": "Hi — ask me anything about Example Co. I'll only answer from what the team has actually written down.",
+  "starters": [
+    "How fast can you get someone out to us?",
+    "What does a call-out cost?",
+    "Do you work on machines you didn't install?",
+    "What areas do you cover?"
+  ],
+  "mode": "answer",
+  "grounding": "strict",
+  "handoffText": "I don't have a solid answer for that one, and I'd rather not guess.",
+  "handoffContact": "Email hello@example.com and a human will pick it up the same working day.",
+  "allowedLinks": [
+    "https://example.com",
+    "https://example.com/pricing",
+    "https://example.com/contact"
+  ],
+  "intakeQuestions": [],
+  "bookingUrl": "",
+  "bookingFitRules": "",
+  "nextSteps": [],
+  "thinkingWords": [
+    "Checking the shop notes",
+    "Looking at the schedule",
+    "One moment",
+    "Rummaging in the FAQ"
+  ]
+}

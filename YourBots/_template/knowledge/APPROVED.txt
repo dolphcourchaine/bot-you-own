@@ -1,0 +1,3 @@
+# Library override list. Files the upload scan held back that you've read and want in anyway.
+# One filename per line, as it sits in this knowledge/ folder (e.g. price-list.pdf, library/call-notes.txt).
+# This file is not bundled into the prompt. It IS your paper trail: git shows who approved what, when.

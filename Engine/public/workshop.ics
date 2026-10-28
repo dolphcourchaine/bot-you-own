@@ -1,0 +1,54 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Designatic LLC//The Bot You Own//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VTIMEZONE
+TZID:America/Denver
+X-LIC-LOCATION:America/Denver
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0700
+TZOFFSETTO:-0600
+TZNAME:MDT
+DTSTART:19700308T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:-0600
+TZOFFSETTO:-0700
+TZNAME:MST
+DTSTART:19701101T020000
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:a013086b8e109f0774945756@designaticlabs.com
+DTSTAMP:20260918T145355Z
+DTSTART;TZID=America/Denver:20260925T080000
+DTEND;TZID=America/Denver:20260925T090000
+SUMMARY:Free Workshop: Install Your Own AI Food Coach
+DESCRIPTION:Stop watching AI demos. Install one.\n\nIn 60 minutes\, you go 
+ from “I sort of get AI” to running your own AI food coach — on your 
+ own account\, under your own control. No coding.\n\nWhat we do:\nAI in pla
+ in English — what these things actually are\, what they cannot do\, and 
+ why that matters for anything you build.\nInstall your own food-tracking c
+ hatbot — you deploy it live. It is yours: your account\, your data\, you
+ r rules.\nWhy this changes things — with something real in front of you\
+ , the whole picture lands.\n\nBring: a laptop\, a free GitHub account\, a 
+ free Cloudflare account.\nIf you don't even know what GitHub or Cloudflare
+  is\, no worries\, if you can click in a browser you can do this for free.
+ \n\nCost: nothing.\n\nJoin with Google Meet: https://meet.google.com/zgm-h
+ khe-ysu\nJoin by phone: (US) +1 413-679-2667  PIN: 721 647 859#\n\nhttps:/
+ /bot-you-own.designaticlabs.com
+LOCATION:https://meet.google.com/zgm-hkhe-ysu
+URL:https://bot-you-own.designaticlabs.com
+ORGANIZER;CN=Jim Tyrrell:mailto:thedesignatic@gmail.com
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+BEGIN:VALARM
+TRIGGER:-PT10M
+ACTION:DISPLAY
+DESCRIPTION:Free Workshop: Install Your Own AI Food Coach
+END:VALARM
+END:VEVENT
+END:VCALENDAR

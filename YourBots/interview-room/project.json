@@ -1,0 +1,39 @@
+{
+  "kind": "chat",
+  "order": 6,
+  "demo": true,
+  "name": "Interview Room",
+  "tagline": "A mock interviewer that asks, waits, and scores you at the end",
+  "greeting": "Welcome to the Interview Room. I'll run a short mock interview — one question at a time — then give you a scorecard. Tell me the role you're interviewing for and we'll start.",
+  "starters": [
+    "I'm interviewing for a junior product manager role",
+    "Give me a behavioural interview for a sales job",
+    "What makes a strong STAR answer?",
+    "I'm nervous — how does this work?"
+  ],
+  "mode": "assistant",
+  "grounding": "open",
+  "handoffText": "That's beyond a mock interview — a real coach should help you with that.",
+  "handoffContact": "Book a session with the coaching team at hello@careerforge.example.",
+  "handoffActions": {
+    "webhook": "",
+    "email": "",
+    "on": [
+      "handoff"
+    ]
+  },
+  "allowedLinks": [
+    "https://careerforge.example",
+    "https://careerforge.example/book"
+  ],
+  "intakeQuestions": [],
+  "bookingUrl": "",
+  "bookingFitRules": "",
+  "nextSteps": [],
+  "thinkingWords": [
+    "Reading your answer",
+    "Making a note",
+    "Thinking of the next question",
+    "One moment"
+  ]
+}

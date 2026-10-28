@@ -1,0 +1,46 @@
+{
+  "kind": "chat",
+  "order": 5,
+  "demo": true,
+  "name": "Reps",
+  "tagline": "Your trainer's programme, on call between sessions",
+  "greeting": "Hi — I'm the between-sessions coach for Vity Strength. Ask me how to run today's session, how a lift should feel, or what to do if something hurts.",
+  "starters": [
+    "What's on for a Push day?",
+    "How do I know what weight to start with?",
+    "My lower back is a bit sore after deadlifts — what should I do?",
+    "Can I swap an exercise I can't do?"
+  ],
+  "mode": "concierge",
+  "grounding": "strict",
+  "handoffText": "That's one for your coach, not me — I'd rather not guess about your body or your programme.",
+  "handoffContact": "Message Vity on WhatsApp on +44 7700 900321, or email coach@vitystrength.example. Anything urgent or painful, stop and ask a person.",
+  "handoffActions": {
+    "webhook": "",
+    "email": "",
+    "on": [
+      "handoff",
+      "intake-complete"
+    ]
+  },
+  "allowedLinks": [
+    "https://vitystrength.example",
+    "https://vitystrength.example/programme"
+  ],
+  "intakeQuestions": [],
+  "bookingUrl": "",
+  "bookingFitRules": "",
+  "nextSteps": [
+    {
+      "name": "Log it in Plate",
+      "who": "anyone tracking food alongside training",
+      "link": "https://vitystrength.example/programme"
+    }
+  ],
+  "thinkingWords": [
+    "Checking the programme",
+    "Reading the coaching notes",
+    "One sec",
+    "Looking at the exercise library"
+  ]
+}

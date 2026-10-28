@@ -1,0 +1,28 @@
+{
+  "order": 3,
+  "name": "FAQ Bot",
+  "tagline": "Answers only from the documents you give it.",
+  "greeting": "Ask me anything about Northwind Joinery. I only answer from what the team has actually written down — if it isn't in my files, I'll say so rather than guess.",
+  "starters": [
+    "What are your opening hours?",
+    "Do you deliver, and how much is it?",
+    "How long does a fitted wardrobe take?",
+    "What's your guarantee?"
+  ],
+  "mode": "answer",
+  "grounding": "strict",
+  "access": "open",
+  "listed": true,
+  "handoffText": "That isn't in my files, and I'd rather not guess.",
+  "handoffContact": "Email hello@northwind-joinery.example and a person will pick it up the same working day.",
+  "allowedLinks": [],
+  "intakeQuestions": [],
+  "bookingUrl": "",
+  "bookingFitRules": "",
+  "nextSteps": [],
+  "thinkingWords": [
+    "Checking the files",
+    "Looking that up",
+    "One moment"
+  ]
+}

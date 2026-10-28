@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clients · Food log</title>
+<!-- THE COACH VIEW. The admin code opens it (same one as "Under the hood").
+     Every client: targets, streak, last log, 7-day adherence, weight; click for
+     their week. Link a second device with its 6-character code. Export CSV. -->
+<style>
+  :root { --accent:#10a37f; --bg:#fff; --panel:#f4f4f5; --text:#0d0d0d; --muted:#6b6b6b; --edge:#e5e5e5; --danger:#b42318; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0f0f10; --panel:#1c1c1e; --text:#ececec; --muted:#9a9a9a; --edge:#2c2c2e; } }
+  * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--text); font:15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .wrap { max-width:1040px; margin:0 auto; padding:20px 16px 60px; }
+  h1 { font-size:22px; margin:0 0 4px; } h2 { font-size:17px; margin:20px 0 8px; } .muted { color:var(--muted); } .small { font-size:13px; }
+  button { font:inherit; border:0; border-radius:10px; padding:9px 14px; background:var(--panel); color:var(--text); cursor:pointer; } button.primary { background:var(--accent); color:#fff; font-weight:600; }
+  input { font:inherit; padding:10px 12px; border:1px solid var(--edge); border-radius:10px; background:var(--panel); color:var(--text); }
+  table { width:100%; border-collapse:collapse; font-size:14px; } th, td { text-align:left; padding:9px 8px; border-bottom:1px solid var(--edge); white-space:nowrap; } th { color:var(--muted); font-weight:500; font-size:12px; }
+  tr.client:hover { background:var(--panel); cursor:pointer; }   /* "client", not "row": .row is the flex helper, and a flex <tr> wraps its cells into a heap */
+  .card { background:var(--panel); border-radius:14px; padding:14px 16px; margin:10px 0; }
+  .tbl { overflow-x:auto; }
+  .pill { font-size:11px; padding:2px 8px; border-radius:999px; background:var(--edge); color:var(--muted); }
+  .bar { height:6px; background:var(--edge); border-radius:6px; overflow:hidden; width:120px; display:inline-block; vertical-align:middle; } .bar i { display:block; height:100%; background:var(--accent); }
+  .days { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:10px; }
+  .day { background:var(--panel); border-radius:14px; padding:12px; } .day b { display:block; } .day .m { font-size:13px; padding:4px 0; border-top:1px solid var(--edge); display:flex; gap:8px; align-items:center; } .day img { width:28px; height:28px; border-radius:6px; object-fit:cover; }
+  a { color:var(--accent); } .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  #login { max-width:380px; margin:60px auto; }
+</style>
+</head>
+<body><div class="wrap">
+  <div id="login" hidden>
+    <h1>Clients</h1><p class="muted">The admin code — the same one that opens “Under the hood”.</p>
+    <form id="lf"><input id="code" type="password" placeholder="Admin code" style="width:100%" autofocus><button class="primary" style="width:100%;margin-top:8px">Open</button></form>
+    <p class="muted small" id="lerr"></p>
+  </div>
+  <div id="main" hidden>
+    <div class="row" style="justify-content:space-between"><div><h1>Clients</h1><p class="muted small" id="sub"></p></div>
+      <div class="row"><a href="/food" id="clientlink" class="small">the client page →</a><button id="csv">Export CSV</button><button id="refresh">Refresh</button></div></div>
+    <div class="card"><div class="row"><b>Link a second device</b><input id="lemail" placeholder="client email" type="email"><input id="lcode" placeholder="6-char code" maxlength="6" style="width:120px;text-transform:uppercase"><button id="link">Link</button><span class="muted small" id="lmsg"></span></div>
+      <p class="muted small" style="margin:6px 0 0">A client who types their email on a second phone sees a code instead of their log. Type both here and that phone is in. Codes last 7 days.</p></div>
+    <div class="tbl" id="list"></div>
+    <div id="detail" hidden></div>
+  </div>
+</div>
+<script>
+// /apps/<id>/coach → that bot's coach API; /food/coach → the old alias for "plate".
+const APPM = location.pathname.match(/^\/apps\/([a-z0-9-]+)/);
+const ADMIN_API = APPM ? '/api/admin/apps/' + APPM[1] + '/' : '/api/admin/food/';
+const CLIENT_PAGE = APPM ? '/apps/' + APPM[1] : '/food';
+// Each client has an address: COACH_PAGE/<client id>. Back returns to the list.
+const COACH_PAGE = CLIENT_PAGE + '/coach';
+const clientInUrl = () => decodeURIComponent(location.pathname.slice(COACH_PAGE.length).split('/').filter(Boolean)[0] || '');
+document.addEventListener('DOMContentLoaded', () => { document.querySelectorAll('#clientlink, .clientlink2').forEach((a) => a.href = CLIENT_PAGE); });
+
+'use strict';
+const $ = (id) => document.getElementById(id);
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
+let TOKEN = ''; try { TOKEN = localStorage.getItem('adminToken') || ''; } catch {}
+async function api(path, opts = {}) { const r = await fetch(ADMIN_API + path, { method: opts.method || 'GET', headers: { 'x-admin-token': TOKEN, ...(opts.json ? { 'content-type': 'application/json' } : {}) }, body: opts.json ? JSON.stringify(opts.json) : undefined }); if (r.status === 401) { $('main').hidden = true; $('login').hidden = false; throw new Error('admin'); } return r; }
+$('lf').onsubmit = async (e) => { e.preventDefault(); const r = await fetch('/api/admin/unlock', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ passphrase: $('code').value }) }); const d = await r.json().catch(() => ({})); if (!r.ok) { $('lerr').textContent = d.error || 'Wrong code'; return; } TOKEN = d.token; try { localStorage.setItem('adminToken', TOKEN); } catch {} $('login').hidden = true; $('main').hidden = false; await list(); if (clientInUrl()) detail(clientInUrl(), true); };
+(async () => { if (!TOKEN) { $('login').hidden = false; return; } try { $('main').hidden = false; await list(); if (clientInUrl()) await detail(clientInUrl(), true); } catch {} })();
+window.addEventListener('popstate', () => { if (clientInUrl()) detail(clientInUrl(), true); else $('detail').hidden = true; });
+$('refresh').onclick = list; $('csv').onclick = async () => { const r = await api('export.csv'); const b = await r.blob(); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'clients.csv'; a.click(); };
+$('link').onclick = async () => { const r = await api('link', { method: 'POST', json: { email: $('lemail').value, deviceCode: $('lcode').value } }); const d = await r.json(); $('lmsg').textContent = d.ok ? 'Linked.' : (d.reason || d.error); if (d.ok) list(); };
+function ago(t) { if (!t) return '—'; const m = (Date.now() - Date.parse(t)) / 60000; return m < 60 ? Math.round(m) + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' d ago'; }
+async function list() {
+  const r = await api('clients'); const d = await r.json();
+  $('sub').textContent = d.clients.length + ' client' + (d.clients.length === 1 ? '' : 's') + (d.coachName ? ' · ' + d.coachName : '');
+  $('list').innerHTML = d.clients.length ? '<table><tr><th>Client</th><th>Targets</th><th>Streak</th><th>7-day adherence</th><th>Logged / 7 d</th><th>Avg kcal</th><th>Weight</th><th>Household</th><th>Devices</th><th>Last log</th></tr>' + d.clients.map((c) => '<tr class="client" data-id="' + c.id + '"><td><b>' + esc(c.name || c.email) + '</b>' + (c.name ? '<div class="muted small">' + esc(c.email) + '</div>' : '') + '</td><td class="small">' + (c.targets ? c.targets.kcal + ' kcal · P' + c.targets.protein_g + ' C' + c.targets.carbs_g + ' F' + c.targets.fat_g : '<span class="muted">not set</span>') + '</td><td>' + (c.streak ? '🔥 ' + c.streak : '—') + '</td><td>' + (c.adherence == null ? '<span class="muted">—</span>' : '<span class="bar"><i style="width:' + c.adherence + '%"></i></span> ' + c.adherence + '%') + '</td><td>' + c.daysLogged + '</td><td>' + (c.daysLogged ? c.avgKcal : '—') + '</td><td>' + (c.weight ? c.weight + ' kg' + (c.weightChange30 != null ? ' <span class="muted small">(' + (c.weightChange30 > 0 ? '+' : '') + c.weightChange30 + ')</span>' : '') : '—') + '</td><td>' + esc(c.household || '—') + '</td><td>' + c.devices + (c.pending ? ' <span class="pill">' + c.pending + ' waiting</span>' : '') + '</td><td class="small">' + ago(c.last_log) + '</td></tr>').join('') + '</table>' : '<p class="muted">No clients yet. Send them to <a href="/food" class="clientlink2">the client page</a>.</p>';
+  $('list').querySelectorAll('tr.client').forEach((tr) => tr.onclick = () => detail(tr.dataset.id));
+}
+async function detail(id, fromUrl) {
+  const here = COACH_PAGE + '/' + encodeURIComponent(id);
+  if (!fromUrl && location.pathname !== here) history.pushState(null, '', here);
+  const r = await api('client/' + id); const d = await r.json();
+  const c = d.client, t = c.targets || {};
+  $('detail').hidden = false;
+  $('detail').innerHTML = '<h2>' + esc(c.name || c.email) + ' <span class="muted small">' + esc(c.email) + '</span></h2><p class="small muted">Streak ' + d.week.streak + ' · adherence ' + (d.week.adherence ?? '—') + '% · ' + d.devices.length + ' device(s)' + (d.pending.length ? ' · waiting codes: ' + d.pending.map((p) => p.code).join(', ') : '') + (c.household ? ' · household “' + esc(c.household.name) + '” with ' + c.household.members.filter((m) => m.id !== c.id).map((m) => esc(m.name)).join(', ') : '') + '</p>'
+    + '<div class="days">' + d.days.map((day) => '<div class="day"><b>' + day.date + ' <span class="muted small">' + day.totals.kcal + (t.kcal ? ' / ' + t.kcal : '') + ' kcal · P' + Math.round(day.totals.protein_g) + ' C' + Math.round(day.totals.carbs_g) + ' F' + Math.round(day.totals.fat_g) + (day.weight ? ' · ' + day.weight + ' kg' : '') + '</span></b>' + (day.meals.length ? day.meals.map((m) => '<div class="m">' + (m.thumb ? '<img src="' + m.thumb + '">' : '<span>' + ({ text: '⌨️', barcode: '▥', label: '🏷' }[m.source] || '🍽') + '</span>') + '<span style="flex:1">' + esc(m.items.map((i) => i.name).join(', ')) + '</span><span class="muted">' + Math.round(m.kcal) + '</span></div>').join('') : '<div class="muted small">nothing logged</div>') + '</div>').join('') + '</div>'
+    + (d.days.at(-1).weights.points.length ? '<p class="small muted">Weight, 30 days: ' + d.days.at(-1).weights.points.map((p) => p.date.slice(5) + ' ' + p.kg).join(' · ') + '</p>' : '')
+    + '<div id="weekwords" style="background:var(--panel);border-radius:12px;padding:12px 14px;margin:12px 0"><b>The week in words</b> <button id="ww-go" style="margin-left:8px;padding:4px 10px;font-size:13px">Write it</button><span class="muted small" style="margin-left:8px">One model call, cached until their food changes. The same paragraph the client sees on their Week tab.</span><div id="ww-body" class="small" style="margin-top:8px"></div></div>';
+  $('detail').scrollIntoView({ behavior: 'smooth' });
+  const ww = async (refresh) => {
+    $('ww-body').innerHTML = '<span class="muted">Reading the week…</span>'; $('ww-go').disabled = true;
+    const x = await (await api('client/' + id + '/summary?kind=week' + (refresh ? '&refresh=1' : ''))).json();
+    $('ww-go').disabled = false; $('ww-go').textContent = 'Write it again';
+    if (x.empty) { $('ww-body').innerHTML = '<span class="muted">' + esc(x.note) + '</span>'; return; }
+    if (!x.summary) { $('ww-body').innerHTML = '<span class="muted">' + esc(x.error || 'No summary.') + '</span>'; return; }
+    const sm = x.summary;
+    $('ww-body').innerHTML = '<p style="margin:0 0 6px"><b>' + esc(sm.headline) + '</b></p>' + [['Averages', sm.averages], ['The pattern', sm.pattern], ['Protein', sm.protein], ['Weight', sm.weight], ['Next week', sm.nudge]].filter(([, v]) => v).map(([k, v]) => '<p style="margin:4px 0"><span class="muted">' + k + ':</span> ' + esc(v) + '</p>').join('') + '<p class="muted" style="margin:6px 0 0">written ' + esc(String(x.at || '').slice(0, 16).replace('T', ' ')) + (x.cached ? ' (cached)' : '') + '</p>';
+  };
+  $('ww-go').onclick = () => ww($('ww-go').textContent === 'Write it again');
+  // If it's already written, show it without a click.
+  api('client/' + id + '/summary?kind=week').then((r) => r.json()).then((x) => { if (x.summary && x.cached) { $('ww-go').textContent = 'Write it again'; const sm = x.summary; $('ww-body').innerHTML = '<p style="margin:0 0 6px"><b>' + esc(sm.headline) + '</b></p>' + [['Averages', sm.averages], ['The pattern', sm.pattern], ['Protein', sm.protein], ['Weight', sm.weight], ['Next week', sm.nudge]].filter(([, v]) => v).map(([k, v]) => '<p style="margin:4px 0"><span class="muted">' + k + ':</span> ' + esc(v) + '</p>').join('') + '<p class="muted" style="margin:6px 0 0">written ' + esc(String(x.at || '').slice(0, 16).replace('T', ' ')) + '</p>'; } }).catch(() => {});
+}
+</script>
+</body>
+</html>

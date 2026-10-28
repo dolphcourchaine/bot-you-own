@@ -1,0 +1,37 @@
+{
+  "order": 50,
+  "name": "My Business",
+  "tagline": "One line about what you do",
+  "greeting": "Hi — ask me anything about what we do. I'll only answer from what my team has actually written down.",
+  "starters": [
+    "What do you do?",
+    "How do I get in touch?"
+  ],
+  "mode": "answer",
+  "grounding": "strict",
+  "access": "",
+  "listed": true,
+  "accessKey": "",
+  "handoffText": "I don't have a solid answer for that one, and I'd rather not guess.",
+  "handoffContact": "Email us at hello@example.com and a human will pick it up.",
+  "handoffActions": { "webhook": "", "email": "", "on": ["handoff", "intake-complete", "booking"] },
+  "allowedLinks": [
+    "https://example.com",
+    "https://example.com/contact"
+  ],
+  "intakeQuestions": [],
+  "bookingUrl": "",
+  "bookingFitRules": "",
+  "booking": { "provider": "cal.com", "eventTypeId": 0, "timezone": "America/New_York", "durationNote": "" },
+  "nextSteps": [],
+  "website": {
+    "url": "",
+    "include": [],
+    "exclude": []
+  },
+  "thinkingWords": [
+    "Thinking",
+    "Checking the files",
+    "One moment"
+  ]
+}

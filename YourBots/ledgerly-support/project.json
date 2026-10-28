@@ -1,0 +1,50 @@
+{
+  "order": 4,
+  "demo": true,
+  "name": "Ledgerly",
+  "tagline": "Bookkeeping software for solo consultants",
+  "greeting": "Hi! I'm the Ledgerly assistant. Ask me about the product, plans, or getting set up.",
+  "starters": [
+    "What's the difference between Solo and Studio?",
+    "Can I get a refund?",
+    "Does it connect to my bank?",
+    "Is there a discount for annual billing?"
+  ],
+  "mode": "concierge",
+  "grounding": "strict",
+  "handoffText": "I don't have a solid answer for that one, and I'd rather not guess.",
+  "handoffContact": "Email support@ledgerly.example — a real person replies within one business day.",
+  "allowedLinks": [
+    "https://ledgerly.example",
+    "https://ledgerly.example/pricing",
+    "https://ledgerly.example/docs",
+    "https://ledgerly.example/book-a-demo"
+  ],
+  "intakeQuestions": [],
+  "bookingUrl": "",
+  "bookingFitRules": "",
+  "nextSteps": [
+    {
+      "name": "The 14-day free trial",
+      "who": "someone who hasn't tried Ledgerly yet",
+      "link": "https://ledgerly.example"
+    },
+    {
+      "name": "A 20-minute demo call",
+      "who": "a consultant with more than one client and questions about invoicing or tax",
+      "link": "https://ledgerly.example/book-a-demo"
+    },
+    {
+      "name": "The setup docs",
+      "who": "an existing customer trying to connect a bank or import data",
+      "link": "https://ledgerly.example/docs"
+    }
+  ],
+  "thinkingWords": [
+    "Checking the plan details",
+    "Reading the billing page",
+    "Looking that up in the docs",
+    "One sec",
+    "Consulting the FAQ"
+  ]
+}

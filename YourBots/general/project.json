@@ -1,0 +1,29 @@
+{
+  "order": 1,
+  "name": "Assistant",
+  "tagline": "A general assistant, ChatGPT-style, that you run yourself",
+  "greeting": "What can I help with?",
+  "starters": [
+    "Explain how this bot is different from ChatGPT",
+    "Draft a polite email declining a meeting",
+    "Give me three names for a dog-walking business",
+    "What can't you do?"
+  ],
+  "mode": "assistant",
+  "grounding": "open",
+  "handoffText": "I'm not able to help with that one.",
+  "handoffContact": "",
+  "allowedLinks": [
+    "https://developers.cloudflare.com",
+    "https://github.com"
+  ],
+  "intakeQuestions": [],
+  "bookingUrl": "",
+  "bookingFitRules": "",
+  "nextSteps": [],
+  "website": {
+    "url": "",
+    "include": [],
+    "exclude": []
+  }
+}
